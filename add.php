@@ -11,6 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contacts = json_decode(file_get_contents("contacts.json"), true);
   } else {
     $contacts = [];
+    /**
+     * Cosas que vamos a solventar con la implementacion de sql:
+     * 1- problemas de concurrencia, si por ejemplo dos personas intenta anadir a la vez un dato en el mismo campo
+     * 2- persistencia robusta
+     */
   }
   $contacts[] = $contact;
 
