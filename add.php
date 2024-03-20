@@ -1,26 +1,12 @@
 <?php
+  require "database.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $contact = [
-    "name" => $_POST["name"],
-    "phone_number" => $_POST["phone_number"],
-  ];
-  /**
-   * La condicion de arriba lo que hace es dar formato y almacenar lo que nos llega del formulario
-   */
-  if (file_exists("contacts.json")) {
-    $contacts = json_decode(file_get_contents("contacts.json"), true);
-  } else {
-    $contacts = [];
-    /**
-     * Cosas que vamos a solventar con la implementacion de sql:
-     * 1- problemas de concurrencia, si por ejemplo dos personas intenta anadir a la vez un dato en el mismo campo
-     * 2- persistencia robusta
-     */
-  }
-  $contacts[] = $contact;
+  $name = $_POST["name"];
+  $phoneNumber = $_POST["phone_number"];
 
+  $statement = $conn ->prepare("INSERT INTO contacts (name, phone_number) VALUES ('$name', '$phoneNumber')");//evidentemente esto implica problenmas de seguridad
+  $statement->execute();
 
-  file_put_contents("contacts.json", json_encode($contacts));
   header("Location: index.php");
 }
 ?>
