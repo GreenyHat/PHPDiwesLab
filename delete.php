@@ -14,4 +14,4 @@ if ($statement->rowCount() == 0) {
   return;//Esto entiendo que es igual que poner un else y lo de abajo???
 }
 $conn->prepare("DELETE FROM contacts WHERE id = :id")->execute([":id" => $id]);
-header("Location: index.php");//redirect
+header("Location: home.php");//redirect
