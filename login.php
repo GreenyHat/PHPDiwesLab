@@ -4,6 +4,33 @@ require "database.php";
 $error = null;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (empty($_POST["email"]) || empty($_POST["password"])) {
+    $error = "Please fill all the fileds.";
+  } else if (!str_contains($_POST["email"], "@")) {
+    $error = "Email format is incorrect.";
+  } else {
+    $statement = $conn->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+    $statement->bindParam(":email", $_POST["email"]);
+    $statement->execute();
+
+    if ($statement->rowCount() == 0) {
+      $error = "Invalid credentials.";
+    } else {
+      $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+      if (!password_verify($_POST["password"], $user["password"])) {
+        $error = "Invalid credentials.";
+      } else {
+        session_start();
+
+        unset($user["password"]);
+
+        $_SESSION["user"] = $user;
+
+        header("Location: home.php");
+      }
+    }
+  }
 }
 ?>
 <?php require "partials/header.php" ?>
@@ -12,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card">
-        <div class="card-header">Register</div>
+        <div class="card-header">Login</div>
         <div class="card-body">
           <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||ANALIZA ESTA SINTXIS -->
           <?php if ($error) : ?>
@@ -21,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </p>
           <?php endif ?>
           <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
-          <form method="POST" action="add.php">
+          <form method="POST" action="login.php">
             <div class="mb-3 row">
               <label for="email" class="col-md-4 col-form-label text-md-end">Email</label>
 

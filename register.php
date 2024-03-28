@@ -24,7 +24,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           ":password" => password_hash($_POST["password"], PASSWORD_BCRYPT), //haseheo de password para que no te de solo texto plano
         ]);
 
-        header("Location: home.php");
+      $statement = $conn->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+      $statement->bindParam(":email", $_POST["email"]);
+      $statement->execute();
+      $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+      session_start();
+      $_SESSION["user"] = $user;
+
+      header("Location: home.php");
     }
   }
 }
